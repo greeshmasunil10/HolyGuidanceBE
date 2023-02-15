@@ -7,9 +7,9 @@ Created on Mon Feb 13 11:40:52 2023
 
 import os
 import openai
-from env import API_KEY, OPENAI_ORG
-openai.api_key = API_KEY
-openai.organization = OPENAI_ORG
+# from env import API_KEY, OPENAI_ORG
+openai.api_key = os.environ['API_KEY']
+openai.organization = os.environ['OPENAI_ORG']
 # openai.Model.list()
 
 
