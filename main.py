@@ -4,27 +4,16 @@ Created on Mon Feb 13 11:40:52 2023
 
 @author: grees
 """
-
 import os
 import openai
-# from env import API_KEY, OPENAI_ORG
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
 openai.api_key = os.environ['API_KEY']
 openai.organization = os.environ['OPENAI_ORG']
-# openai.Model.list()
-
-
-
-# Define the prompt
-# prompt = "How do I deal with this problem?"
-
-# prompt = input("Enter your question: ")
-
-# helper = "I want you to act as a Bible expert and Pastor and provide guidance and support to people who seek help with their personal or spiritual issues. You will listen to their concerns and provide them with meaningful and biblical-based suggestions. Do not offer medical, legal or financial advice. Focus on offering wisdom and comfort from the scripture. Your responses must include a verson from the bible with explanation. Your response must also be to the point and compassionate. Your first message is: help me."
-
-# question = helper + prompt  1
-
-# Generate a response using GPT-3
-
 
 def ask_gpt(question):
     response = openai.Completion.create(
@@ -37,14 +26,6 @@ def ask_gpt(question):
     )
     
     return response["choices"][0]["text"]
-
-
-# # Print the response
-# print(ask_gpt(question))
-
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
 
 @app.route("/")
 def ask_question():
