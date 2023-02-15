@@ -53,6 +53,3 @@ def ask_question():
     question = helper + question + "'"
     response = ask_gpt(question)
     return jsonify({"response": response})
-
-if __name__ == "__main__":
-    app.run(debug=True)
