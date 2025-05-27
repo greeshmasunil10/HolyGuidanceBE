@@ -4,19 +4,24 @@ Created on Mon Feb 13 11:40:52 2023
 
 @author: grees
 """
+
+
 import os
-import openai
+from openai import OpenAI
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-openai.api_key = os.environ['API_KEY']
-openai.organization = os.environ['OPENAI_ORG']
+# Create OpenAI client
+client = OpenAI(
+    api_key=os.environ['API_KEY'],
+    organization=os.environ['OPENAI_ORG']
+)
 
 def ask_gpt(question):
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {
@@ -31,7 +36,7 @@ def ask_gpt(question):
         max_tokens=1024,
         temperature=0.5,
     )
-    return response["choices"][0]["message"]["content"]
+    return response.choices[0].message.content
 
 @app.route("/")
 def ask_question():
