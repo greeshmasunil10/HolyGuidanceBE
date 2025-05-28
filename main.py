@@ -6,20 +6,28 @@ Created on Mon Feb 13 11:40:52 2023
 """
 
 import os
-from openai import OpenAI
+import urllib.parse as urlparse
 from flask import Flask, request, jsonify, session
 from flask_cors import CORS
 from flask_session import Session
+from redis import Redis
+from openai import OpenAI
 
+# Create Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Configure server-side session
-app.config["SESSION_TYPE"] = "filesystem"
+# Redis session config
+redis_url = os.environ.get('REDIS_URL')
+url = urlparse.urlparse(redis_url)
+redis_instance = Redis(host=url.hostname, port=url.port, password=url.password)
+
+app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_REDIS"] = redis_instance
 app.secret_key = os.environ.get("SECRET_KEY", "supersecretkey")
 Session(app)
 
-# Create OpenAI client
+# OpenAI client setup
 client = OpenAI(
     api_key=os.environ['API_KEY'],
     organization=os.environ['OPENAI_ORG']
@@ -49,13 +57,13 @@ def ask_question():
             }
         ]
 
-    # Append user message
+    # Add user question to history
     session['history'].append({"role": "user", "content": question})
 
-    # Call OpenAI API
+    # Get GPT response
     response_text = ask_gpt(session['history'])
 
-    # Append bot response to history
+    # Add bot response to history
     session['history'].append({"role": "assistant", "content": response_text})
     session.modified = True
 
